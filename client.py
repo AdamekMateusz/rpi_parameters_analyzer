@@ -1,6 +1,6 @@
 """
 
-Written by Mateusz Rzeczyca, Mateusz Adamek, Hubert Chrzan
+Written by Mateusz Rzeczyca, Mateusz Adamek
 Students - AGH University of Science and Technology
 Cracow, 14.01.2021
 

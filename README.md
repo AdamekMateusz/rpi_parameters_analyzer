@@ -18,9 +18,30 @@ Secondly, you can run **client.py** on RPi:
 python3 client.py --ip 192.168.1.1 --port 3305 --buffer 1024 --transmit_time 4
 ```
 
+## Example output
+
+Local machine:
+
+<p align="center">
+  <img width="734" height="129" src="img/local_output.png">
+</p>
+
+RPi output:
+
+<p align="center">
+  <img width="545" height="72" src="img/rpi_output.png">
+</p>
+
+Plotted data:
+
+<p align="center">
+  <img width="641" height="480" src="img/figure.png">
+</p>
+
 ## Authors
 
-Mateusz Rzeczyca - student AGH University of Science and Technology  [rzeczyca@student.agh.edu.pl](mailto:rzeczyca@student.agh.edu.pl)
+Mateusz Rzeczyca - student AGH University of Science and Technology - [rzeczyca@student.agh.edu.pl](mailto:rzeczyca@student.agh.edu.pl)
+
 Mateusz Adamek - student AGH University of Science and Technology - [madamek@student.agh.edu.pl](mailto:madamek@student.agh.edu.pl)
 
 ## License

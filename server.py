@@ -15,7 +15,6 @@ import requests
 import argparse
 import tkinter
 import socket
-import socket
 import struct
 import fcntl
 import re
@@ -54,7 +53,12 @@ class MACManager(object):
         info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', bytes(ifname, 'utf-8')[:15]))
 
         mac_addr = ':'.join('%02x' % b for b in info[18:24])
-        ip_addr = netifaces.ifaddresses(ifname)[netifaces.AF_INET][0]['addr']
+        ip_addr = 'none'
+        try:
+            ip_addr = netifaces.ifaddresses(ifname)[netifaces.AF_INET][0]['addr']
+        except KeyError:
+            print("Cannot retrieve ip address ")
+            
         vendor = MACManager.__get_mac_details(mac_addr)
 
         return {"ip": ip_addr, "mac": mac_addr, "vendor": vendor}
@@ -76,7 +80,7 @@ class MACManager(object):
         clients = []
         for sent, received in result:
             if address == received.psrc:
-                vendor = __get_mac_details(received.hwsrc)
+                vendor = MACManager.__get_mac_details(received.hwsrc)
                 clients.append({'ip': received.psrc, 'mac': received.hwsrc, 'vendor': vendor})
 
         print(clients)
@@ -236,7 +240,7 @@ class Subplotter(object):
     when data is separated from implementation.
     """
 
-    def __init__(self, axs, x):
+    def __init__(self, axs, x,color):
         """
         Initializes object with created subplot, its x axis data.
 
@@ -244,9 +248,11 @@ class Subplotter(object):
             axs(): subplot from matplotlib
             x(list(int)): list for x axis
         """
+        self.color = color
         self.axs = axs
         self.y = np.array([0])
-        self.lines, = self.axs.plot(x, self.y)
+        self.lines, = self.axs.plot(x, self.y,color=color)
+
 
     def append_new_value(self, val):
         """
@@ -284,12 +290,33 @@ class Plotter(object):
         self.x_time = np.array([0])
 
         self.figure, all_subplots = plt.subplots(6)
-        self.cpu_usage = Subplotter(all_subplots[0], self.x_time)
-        self.uptime = Subplotter(all_subplots[1], self.x_time)
-        self.temperature = Subplotter(all_subplots[2], self.x_time)
-        self.clock_arm = Subplotter(all_subplots[3], self.x_time)
-        self.bitrate_send = Subplotter(all_subplots[4], self.x_time)
-        self.bitrate_recv = Subplotter(all_subplots[5], self.x_time)
+        self.figure.tight_layout()
+
+        self.cpu_usage = Subplotter(all_subplots[0], self.x_time,'r')
+        self.cpu_usage.axs.set_ylabel("cpu % use")
+        self.cpu_usage.axs.set_title("CPU usage")
+
+
+        self.uptime = Subplotter(all_subplots[1], self.x_time,'b')
+        self.uptime.axs.set_title("Uptime")
+        self.uptime.axs.set_ylabel("secounds")
+
+        self.temperature = Subplotter(all_subplots[2], self.x_time,'g')
+        self.temperature.axs.set_title("Temperature")
+        self.temperature.axs.set_ylabel("*C")
+
+        self.clock_arm = Subplotter(all_subplots[3], self.x_time,'r')
+        self.clock_arm.axs.set_title("Clock ARM")
+        self.clock_arm.axs.set_ylabel("Hz")
+
+        self.bitrate_send = Subplotter(all_subplots[4], self.x_time,'b')
+        self.bitrate_send.axs.set_title("Upload")
+        self.bitrate_send.axs.set_ylabel("Mbps")
+
+        self.bitrate_recv = Subplotter(all_subplots[5], self.x_time,'g')
+        self.bitrate_recv.axs.set_title("Download")
+        self.bitrate_recv.axs.set_xlabel("Samples")
+        self.bitrate_recv.axs.set_ylabel("Mbps")
 
         plt.show(block=False)
 
